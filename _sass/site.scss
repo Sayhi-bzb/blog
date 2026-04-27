@@ -27,15 +27,86 @@ html, body { background: white; }
 
 html { height: 100%; scroll-behavior: smooth; }
 
+:root {
+  --font-family-bitmap-12: "WenQuanYi Bitmap Song 12px", serif;
+  --font-family-bitmap-14: "WenQuanYi Bitmap Song 14px", serif;
+  --font-family-bitmap-16: "WenQuanYi Bitmap Song 16px", serif;
+  --font-family-code-block: "Maple Mono NF CN", monospace;
+
+  --font-weight-regular: 400;
+  --font-weight-emphasis: 700;
+
+  --font-family-text: var(--font-family-bitmap-16);
+  --font-family-text-small: var(--font-family-bitmap-14);
+  --font-family-heading-1: var(--font-family-bitmap-16);
+  --font-family-heading-2: var(--font-family-bitmap-14);
+  --font-family-heading-3: var(--font-family-bitmap-12);
+  --font-family-heading-4: var(--font-family-bitmap-12);
+  --font-family-heading-5: var(--font-family-bitmap-16);
+  --font-family-heading-6: var(--font-family-bitmap-16);
+  --font-family-lead: var(--font-family-text);
+  --font-family-emphasis: inherit;
+
+  --font-size-text: 1rem;
+  --font-size-text-small: 0.875rem;
+  --font-size-heading-1: 2rem;
+  --font-size-heading-2: 1.75rem;
+  --font-size-heading-3: 1.5rem;
+  --font-size-heading-4: 1.5rem;
+  --font-size-heading-5: 1rem;
+  --font-size-heading-6: 1rem;
+  --font-size-lead: var(--font-size-text);
+  --font-size-code-inline: 0.9375rem;
+  --font-size-code-block: 0.9375rem;
+
+  --line-height-text: 1.8;
+  --line-height-text-small: 1.5;
+  --line-height-heading: 1.2;
+  --line-height-heading-1: 1;
+  --line-height-heading-2: 1.1;
+  --line-height-heading-3: 1.1;
+  --line-height-heading-4: 1.25;
+  --line-height-lead: var(--line-height-text);
+
+  --space-paragraph: 1.25rem;
+  --space-list: 1.15rem;
+  --space-list-item: 0.5rem;
+  --space-heading-1-bottom: 1.5rem;
+  --space-heading-2-top: 3rem;
+  --space-heading-2-bottom: 1rem;
+  --space-heading-3-top: 2.5rem;
+  --space-heading-3-bottom: 0.75rem;
+  --space-heading-4-top: 1.75rem;
+  --space-heading-4-bottom: 0.5rem;
+  --space-heading-5-top: 1.5rem;
+  --space-heading-5-bottom: 0.75rem;
+
+  --font-synthesis-text: none;
+  --font-synthesis-emphasis: weight;
+}
+
 body {
   color: black;
-  font-family: "Maple Mono NF CN", monospace;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 1.55;
+  font-family: var(--font-family-text);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-text);
+  line-height: var(--line-height-text);
+  font-synthesis: var(--font-synthesis-text);
   margin: 0;
   min-height: 100%;
   overflow-wrap: break-word;
+}
+
+:where(button, input, optgroup, select, textarea) {
+  font: inherit;
+  color: inherit;
+}
+
+:where(dt, dd, label, legend, summary, caption, mark) {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
 }
 
 h1,
@@ -44,47 +115,61 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: 600;
-  line-height: 1.2;
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-heading);
 }
 
 h1 {
-  font-size: 2rem;
-  margin: 0 0 1.5rem;
+  font-family: var(--font-family-heading-1);
+  font-size: var(--font-size-heading-1);
+  line-height: var(--line-height-heading-1);
+  margin: 0 0 var(--space-heading-1-bottom);
 }
 
 h2 {
-  font-size: 1.5rem;
-  margin: 3rem 0 1rem;
+  font-family: var(--font-family-heading-2);
+  font-size: var(--font-size-heading-2);
+  line-height: var(--line-height-heading-2);
+  margin: var(--space-heading-2-top) 0 var(--space-heading-2-bottom);
 }
 
 h3 {
-  font-size: 1.25rem;
-  margin: 2.25rem 0 0.75rem;
+  font-family: var(--font-family-heading-3);
+  font-size: var(--font-size-heading-3);
+  line-height: var(--line-height-heading-3);
+  margin: var(--space-heading-3-top) 0 var(--space-heading-3-bottom);
 }
 
 h4 {
-  font-size: 1.125rem;
-  margin: 1.75rem 0 0.75rem;
+  font-family: var(--font-family-heading-4);
+  font-size: var(--font-size-heading-4);
+  line-height: var(--line-height-heading-4);
+  margin: var(--space-heading-4-top) 0 var(--space-heading-4-bottom);
 }
 
-h5,
+h5 {
+  font-family: var(--font-family-heading-5);
+  font-size: var(--font-size-heading-5);
+  margin: var(--space-heading-5-top) 0 var(--space-heading-5-bottom);
+}
+
 h6 {
-  font-size: 1rem;
-  margin: 1.5rem 0 0.75rem;
+  font-family: var(--font-family-heading-6);
+  font-size: var(--font-size-heading-6);
+  margin: var(--space-heading-5-top) 0 var(--space-heading-5-bottom);
 }
 
 hr { margin: 2rem 0; }
 
-p { margin: 1rem 0; }
+p { margin: var(--space-paragraph) 0; }
 
 ul,
 ol {
-  margin: 1rem 0;
+  margin: var(--space-list) 0;
   padding-left: 1.5rem;
 }
 
-li { margin: 0.4rem 0; }
+li { margin: var(--space-list-item) 0; }
 
 *:target { background: yellow; }
 
@@ -102,7 +187,12 @@ hr {
   &:after { content: attr(data-content) '/////' }
 }
 
-table { width: 100%; }
+table {
+  width: 100%;
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-text);
+  line-height: var(--line-height-text);
+}
 
 table, th, td {
   border: 2px solid black;
@@ -110,18 +200,25 @@ table, th, td {
   padding: 0.4rem;
 }
 
-th { text-align: left; }
+th {
+  text-align: left;
+  font-family: var(--font-family-emphasis);
+  font-weight: var(--font-weight-emphasis);
+  font-synthesis: var(--font-synthesis-emphasis);
+}
 
 .lead,
 article h1 + p {
-  font-size: 1.125rem;
-  line-height: 1.6;
+  font-family: var(--font-family-lead);
+  font-size: var(--font-size-lead);
+  line-height: var(--line-height-lead);
 }
 
 small,
 .small {
-  font-size: 0.875rem;
-  line-height: 1.5;
+  font-family: var(--font-family-text-small);
+  font-size: var(--font-size-text-small);
+  line-height: var(--line-height-text-small);
 }
 
 .muted {
@@ -133,11 +230,25 @@ small,
   text-align: right;
 }
 
-code,
+:where(code, kbd, samp) {
+  font-family: inherit;
+  font-size: var(--font-size-code-inline);
+  font-weight: inherit;
+  line-height: inherit;
+}
+
 pre,
-kbd,
-samp {
-  font-family: "Maple Mono NF CN", monospace;
+pre code,
+div.highlighter-rouge pre,
+div.highlighter-rouge code {
+  font-family: var(--font-family-code-block);
+  font-size: var(--font-size-code-block);
+}
+
+:where(strong, b) {
+  font-family: var(--font-family-emphasis);
+  font-weight: var(--font-weight-emphasis);
+  font-synthesis: var(--font-synthesis-emphasis);
 }
 
 code {
