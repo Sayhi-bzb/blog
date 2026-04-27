@@ -1,0 +1,44 @@
+title: Your Blog
+author: Your Name
+email: you@example.com
+lang: zh-CN
+url: https://example.com
+baseurl: ""
+description: >-
+  记录写作、代码和缓慢搭起来的个人空间。
+
+permalink: /:slug/
+timezone: Asia/Shanghai
+favicon: ""
+katex: false
+# goat_counter: "yoursitename"
+
+theme_config:
+  appearance: "auto"
+  back_home_text: "首页"
+  date_format: "%Y-%m-%d"
+  show_description: true
+  lowercase_titles: false
+  home_post_limit: 5
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+
+exclude:
+  - .agents/
+  - .claude/
+  - AGENTS.md
+  - CLAUDE.md
+  - DESIGN.md
+  - skills-lock.json
+
+sass:
+  style: compressed
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag

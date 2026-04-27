@@ -1,0 +1,37 @@
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>
+    {%- if page.title -%}
+      {{ page.title }} | {{ site.title }}
+    {%- else -%}
+      {{ site.title }}
+    {%- endif -%}
+  </title>
+
+  {%-seo title=false-%}
+  {%-feed_meta-%}
+
+  {%- if site.favicon and site.favicon != "" -%}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ site.favicon | relative_url }}" />
+  {%- endif -%}
+  {%- assign maple_mono_font_styles = "main,bold,bold-italic,extra-bold,extra-bold-italic,extra-light,extra-light-italic,italic,light,light-italic,medium,medium-italic,semi-bold,semi-bold-italic,thin,thin-italic" | split: "," -%}
+  {%- for font_style in maple_mono_font_styles -%}
+    <link
+      rel="preload"
+      as="style"
+      href="https://fontsapi.zeoseven.com/442/{{ font_style }}/result.css"
+      onload="this.onload=null;this.rel='stylesheet'"
+      crossorigin
+    />
+    <noscript><link rel="stylesheet" href="https://fontsapi.zeoseven.com/442/{{ font_style }}/result.css" crossorigin /></noscript>
+  {%- endfor -%}
+  <link rel="stylesheet" href="{{ "/assets/css/main.css" | relative_url }}" />
+  {%- assign enable_katex = page.katex | default: site.katex -%}
+  {%- if enable_katex -%}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.css" integrity="sha384-OH8qNTHoMMVNVcKdKewlipV4SErXqccxxlg6HC9Cwjr5oZu2AdBej1TndeCirael" crossorigin="anonymous">
+  {%- endif -%}
+
+</head>

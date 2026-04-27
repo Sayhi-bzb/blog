@@ -1,0 +1,169 @@
+// -------------- THEME SWITCHER -------------- //
+@mixin dark-appearance {
+  filter: invert(1);
+  img {
+    filter: invert(1);
+
+    &.ioda { filter: invert(0); }
+  }
+  .emoji { filter: invert(1); }
+  iframe {
+    filter: invert(1);
+  }
+}
+
+body[a="dark"] { @include dark-appearance; }
+
+
+@media (prefers-color-scheme: dark) {
+  body[a="auto"] { @include dark-appearance; }
+}
+// -------------------------------------------- //
+
+// bg color is also needed in html in order to
+// block body's background propagation
+// see: https://stackoverflow.com/a/61265706
+html, body { background: white; }
+
+html { height: 100%; scroll-behavior: smooth; }
+
+body {
+  color: black;
+  font-family: "Maple Mono NF CN", monospace;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.55;
+  margin: 0;
+  min-height: 100%;
+  overflow-wrap: break-word;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 2rem;
+  margin: 0 0 1.5rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin: 3rem 0 1rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+  margin: 2.25rem 0 0.75rem;
+}
+
+h4 {
+  font-size: 1.125rem;
+  margin: 1.75rem 0 0.75rem;
+}
+
+h5,
+h6 {
+  font-size: 1rem;
+  margin: 1.5rem 0 0.75rem;
+}
+
+hr { margin: 2rem 0; }
+
+p { margin: 1rem 0; }
+
+ul,
+ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+li { margin: 0.4rem 0; }
+
+*:target { background: yellow; }
+
+.w {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+hr {
+  text-align: center;
+  border: 0;
+
+  &:before { content: '/////' }
+  &:after { content: attr(data-content) '/////' }
+}
+
+table { width: 100%; }
+
+table, th, td {
+  border: 2px solid black;
+  border-collapse: collapse;
+  padding: 0.4rem;
+}
+
+th { text-align: left; }
+
+.lead,
+article h1 + p {
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+small,
+.small {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.muted {
+  color: #555;
+}
+
+.post-meta {
+  margin: 0 0 1.5rem;
+  text-align: right;
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: "Maple Mono NF CN", monospace;
+}
+
+code {
+  color: white;
+  background: black;
+  padding: 0.05rem 0.25rem;
+}
+
+div.highlighter-rouge code {
+  display: block;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  padding: 1rem;
+}
+
+blockquote {
+  font-style: italic;
+  border: 2px solid black;
+  margin: 1.5rem 0;
+  padding: 1rem;
+
+  p { margin: 0; }
+}
+
+img {
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
+}

@@ -1,0 +1,11 @@
+*.gem
+*.css
+*.css.map
+.bundle
+.jekyll-cache
+.jekyll-metadata
+.sass-cache
+_site
+vendor
+Gemfile.lock
+.gitnexus
