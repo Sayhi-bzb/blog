@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blog MD Publisher"
+  short_description: "Publish Markdown into this Jekyll blog"
+  default_prompt: "Use $blog-md-publisher to publish this Markdown file through the blog import script."
