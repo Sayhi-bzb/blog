@@ -6,6 +6,8 @@ url: https://h3nryh3.com
 baseurl: ""
 description: >-
   Notes on writing, code, and a personal space slowly taking shape.
+twitter:
+  card: summary_large_image
 
 permalink: /:slug/
 timezone: Asia/Shanghai
@@ -21,6 +23,14 @@ theme_config:
   home_post_limit: 5
 
 defaults:
+  - scope:
+      path: ""
+    values:
+      image:
+        path: /assets/og-default.jpg
+        width: 3104
+        height: 1552
+        alt: Blog preview image
   - scope:
       path: ""
       type: posts
