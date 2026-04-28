@@ -4,7 +4,6 @@
 require "date"
 require "fileutils"
 require "optparse"
-require "open3"
 require "pathname"
 require "time"
 require "yaml"
@@ -14,6 +13,8 @@ IMAGE_EXTENSIONS = %w[.apng .avif .gif .jpeg .jpg .png .svg .webp].freeze
 
 Options = Struct.new(:source, :build, :dry_run, :force, keyword_init: true)
 PostData = Struct.new(:metadata, :content, :title, :date, :slug, keyword_init: true)
+Validation = Struct.new(:errors, :warnings, keyword_init: true)
+ImportState = Struct.new(:post_path, :post_existed, :previous_post_content, :copied_files, keyword_init: true)
 
 def parse_options(argv)
   options = Options.new(build: true, dry_run: false, force: false)
@@ -61,6 +62,12 @@ end
 
 def abort_with(message)
   warn message
+  exit 1
+end
+
+def abort_with_errors(errors)
+  warn "Import failed validation:"
+  errors.each { |error| warn "- #{error}" }
   exit 1
 end
 
@@ -136,6 +143,8 @@ end
 
 def post_data(source)
   text = File.read(source, encoding: "UTF-8")
+  abort_with("Source is not valid UTF-8: #{source}") unless text.valid_encoding?
+
   metadata, content = split_front_matter(text)
   title = normalize_title(metadata, content, source)
   content = remove_matching_first_h1(content, title)
@@ -164,6 +173,65 @@ def find_attachment(path, source_dir)
   matches.first
 end
 
+def scan_outside_fences(content)
+  in_fence = false
+
+  content.lines.each do |line|
+    if line.match?(/^\s*(```|~~~)/)
+      in_fence = !in_fence
+      next
+    end
+
+    yield line unless in_fence
+  end
+end
+
+def validate_content(content, source_dir)
+  validation = Validation.new(errors: [], warnings: [])
+
+  scan_outside_fences(content) do |line|
+    line.scan(/!\[\[([^\]\|]+)(?:\|[^\]]+)?\]\]/) do |match|
+      path = match.first.strip
+      if image_path?(path)
+        validation.errors << "Image not found: #{path}" unless find_attachment(path, source_dir)&.file?
+      else
+        validation.warnings << "Unsupported Obsidian embed left unchanged: ![[#{path}]]"
+      end
+    end
+
+    line.scan(/!\[([^\]]*)\]\(([^)]+)\)/) do |_alt, raw_path|
+      path = raw_path.strip
+      next if external_path?(path) || !image_path?(path)
+
+      validation.errors << "Image not found: #{path}" unless find_attachment(path, source_dir)&.file?
+    end
+
+    line.scan(/(?<!!)\[\[([^\]\|]+)\|([^\]]+)\]\]|(?<!!)\[\[([^\]]+)\]\]/) do |note, alias_text, plain_note|
+      label = alias_text || plain_note || note
+      validation.warnings << "Obsidian internal link will become plain text: #{label.strip}"
+    end
+  end
+
+  validation.errors.uniq!
+  validation.warnings.uniq!
+  validation
+end
+
+def validate_import(data, source, output_path, force)
+  validation = validate_content(data.content, Pathname.new(source).dirname)
+
+  validation.errors << "Title is empty." if data.title.empty?
+  validation.errors << "Slug is empty." if data.slug.empty?
+  validation.errors << "Slug is not safe for filenames: #{data.slug}" unless data.slug.match?(/\A[a-z0-9][a-z0-9-]*\z/)
+  validation.errors << "Post already exists: #{output_path}. Use --force to overwrite." if output_path.exist? && !force
+
+  validation
+end
+
+def print_warnings(warnings)
+  warnings.each { |warning| warn "Warning: #{warning}" }
+end
+
 def unique_destination(directory, basename)
   stem = File.basename(basename, ".*").gsub(/[^A-Za-z0-9._-]+/, "-").gsub(/\A-+|-+\z/, "")
   stem = "image" if stem.empty?
@@ -179,25 +247,27 @@ def unique_destination(directory, basename)
   destination
 end
 
-def copy_image(path, source_dir, image_dir, image_url_base, dry_run)
+def copy_image(path, source_dir, image_dir, image_url_base, dry_run, state)
   source = find_attachment(path, source_dir)
   unless source&.file?
-    warn "Warning: image not found: #{path}"
     return path
   end
 
   destination = unique_destination(image_dir, source.basename.to_s)
-  FileUtils.mkdir_p(image_dir) unless dry_run
-  FileUtils.cp(source, destination) unless dry_run
+  unless dry_run
+    FileUtils.mkdir_p(image_dir)
+    FileUtils.cp(source, destination)
+    state.copied_files << destination
+  end
   "#{image_url_base}/#{destination.basename}"
 end
 
-def rewrite_markdown_segment(segment, source_dir, image_dir, image_url_base, dry_run)
+def rewrite_markdown_segment(segment, source_dir, image_dir, image_url_base, dry_run, state)
   rewritten = segment.gsub(/!\[\[([^\]\|]+)(?:\|[^\]]+)?\]\]/) do
     path = Regexp.last_match(1).strip
     next Regexp.last_match(0) unless image_path?(path)
 
-    destination = copy_image(path, source_dir, image_dir, image_url_base, dry_run)
+    destination = copy_image(path, source_dir, image_dir, image_url_base, dry_run, state)
     "![#{File.basename(path, ".*")}](#{destination})"
   end
 
@@ -206,13 +276,12 @@ def rewrite_markdown_segment(segment, source_dir, image_dir, image_url_base, dry
     path = Regexp.last_match(2).strip
     next Regexp.last_match(0) if external_path?(path) || !image_path?(path)
 
-    destination = copy_image(path, source_dir, image_dir, image_url_base, dry_run)
+    destination = copy_image(path, source_dir, image_dir, image_url_base, dry_run, state)
     "![#{alt}](#{destination})"
   end
 
-  rewritten.gsub(/\[\[([^\]\|]+)\|([^\]]+)\]\]|\[\[([^\]]+)\]\]/) do
+  rewritten.gsub(/(?<!!)\[\[([^\]\|]+)\|([^\]]+)\]\]|(?<!!)\[\[([^\]]+)\]\]/) do
     label = Regexp.last_match(2) || Regexp.last_match(3)
-    warn "Warning: converted Obsidian internal link to plain text: #{Regexp.last_match(0)}"
     label.strip
   end
 end
@@ -232,13 +301,13 @@ def rewrite_outside_fences(content)
   end.join
 end
 
-def rewrite_content(content, source, slug, dry_run)
+def rewrite_content(content, source, slug, dry_run, state)
   source_dir = Pathname.new(source).dirname
   image_dir = Pathname.new("assets/images/posts/#{slug}")
   image_url_base = "/assets/images/posts/#{slug}"
 
   rewrite_outside_fences(content) do |segment|
-    rewrite_markdown_segment(segment, source_dir, image_dir, image_url_base, dry_run)
+    rewrite_markdown_segment(segment, source_dir, image_dir, image_url_base, dry_run, state)
   end
 end
 
@@ -257,9 +326,7 @@ def jekyll_front_matter(data)
   output.to_yaml.sub(/\A---\n/, "---\n")
 end
 
-def write_post(data, output_path, body, force, dry_run)
-  abort_with("Post already exists: #{output_path}. Use --force to overwrite.") if output_path.exist? && !force
-
+def write_post(data, output_path, body, dry_run, state)
   final_content = "#{jekyll_front_matter(data)}---\n\n#{body.strip}\n"
 
   if dry_run
@@ -267,6 +334,9 @@ def write_post(data, output_path, body, force, dry_run)
     return
   end
 
+  state.post_path = output_path
+  state.post_existed = output_path.exist?
+  state.previous_post_content = state.post_existed ? File.read(output_path, encoding: "UTF-8") : nil
   FileUtils.mkdir_p(output_path.dirname)
   File.write(output_path, final_content, encoding: "UTF-8")
   puts "Wrote #{output_path}"
@@ -274,10 +344,26 @@ end
 
 def build_site
   puts "Running bundle exec jekyll build..."
-  stdout, stderr, status = Open3.capture3("bundle", "exec", "jekyll", "build")
-  puts stdout unless stdout.empty?
-  warn stderr unless stderr.empty?
-  abort_with("Jekyll build failed.") unless status.success?
+  success = system("bundle", "exec", "jekyll", "build")
+  abort_with("Jekyll build failed.") unless success
+end
+
+def rollback_import(state)
+  warn "Rolling back imported files..."
+
+  state.copied_files.reverse_each do |path|
+    FileUtils.rm_f(path.to_s)
+    parent = path.dirname
+    FileUtils.rmdir(parent.to_s) if parent.exist? && parent.children.empty?
+  end
+
+  return unless state.post_path
+
+  if state.post_existed
+    File.write(state.post_path, state.previous_post_content, encoding: "UTF-8")
+  else
+    FileUtils.rm_f(state.post_path.to_s)
+  end
 end
 
 options = parse_options(ARGV)
@@ -286,8 +372,22 @@ abort_with("Source file not found: #{source}") unless source.file?
 abort_with("Source must be a Markdown file: #{source}") unless source.extname.downcase == ".md"
 
 data = post_data(source)
-body = rewrite_content(data.content, source, data.slug, options.dry_run)
 output_path = Pathname.new("_posts/#{date_prefix(data.date)}-#{data.slug}.md")
+validation = validate_import(data, source, output_path, options.force)
 
-write_post(data, output_path, body, options.force, options.dry_run)
-build_site if options.build && !options.dry_run
+abort_with_errors(validation.errors) unless validation.errors.empty?
+print_warnings(validation.warnings)
+
+state = ImportState.new(copied_files: [])
+body = rewrite_content(data.content, source, data.slug, options.dry_run, state)
+
+begin
+  write_post(data, output_path, body, options.dry_run, state)
+  build_site if options.build && !options.dry_run
+rescue SystemExit
+  rollback_import(state) unless options.dry_run
+  raise
+rescue StandardError => e
+  rollback_import(state) unless options.dry_run
+  abort_with("#{e.class}: #{e.message}")
+end

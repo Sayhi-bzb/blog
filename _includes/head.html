@@ -17,6 +17,7 @@
   {%- if site.favicon and site.favicon != "" -%}
     <link rel="icon" type="image/svg+xml" href="{{ site.favicon | relative_url }}" />
   {%- endif -%}
+  <link rel="preload" href="{{ "/assets/fonts/WenQuanYi%20Bitmap%20Song%2016px.woff2" | relative_url }}" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="{{ "/assets/css/main.css" | relative_url }}" />
   {%- assign enable_katex = page.katex | default: site.katex -%}
   {%- if enable_katex -%}

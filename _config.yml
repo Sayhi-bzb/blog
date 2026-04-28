@@ -34,12 +34,16 @@ exclude:
   - AGENTS.md
   - CLAUDE.md
   - DESIGN.md
+  - README.md
+  - assets/fonts/LICENSE
+  - assets/fonts/README.md
   - scripts/
   - skills-lock.json
   - writing/
 
 sass:
   style: compressed
+  sourcemap: never
 
 plugins:
   - jekyll-feed

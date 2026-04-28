@@ -59,7 +59,14 @@ ruby scripts/import_post.rb path/to/article.md
 - 将本地图片复制到 `assets/images/posts/<slug>/`
 - 将 Obsidian 图片 `![[image.png]]` 改写成普通 Markdown 图片
 - 将 Obsidian 内链 `[[Note]]` 或 `[[Note|Alias]]` 转成纯文本并输出 warning
+- 导入前校验 YAML、日期、slug 和本地图片路径
+- 构建失败时自动回滚本次写入的文章和图片
 - 默认执行 `bundle exec jekyll build`
+
+导入脚本把问题分成两类：
+
+- error：会阻止导入，例如 YAML 错误、日期错误、slug 不安全、本地图片缺失
+- warning：只提示不阻止，例如 Obsidian 内链会降级成纯文本
 
 常用选项：
 
