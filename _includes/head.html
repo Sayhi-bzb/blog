@@ -15,29 +15,8 @@
   {%-feed_meta-%}
 
   {%- if site.favicon and site.favicon != "" -%}
-    <link rel="shortcut icon" type="image/x-icon" href="{{ site.favicon | relative_url }}" />
+    <link rel="icon" type="image/svg+xml" href="{{ site.favicon | relative_url }}" />
   {%- endif -%}
-  {%- assign bitmap_font_resources = "12px:12px,14px:14px,16px:main" | split: "," -%}
-  {%- for font_resource in bitmap_font_resources -%}
-    {%- assign font_parts = font_resource | split: ":" -%}
-    {%- assign font_path = font_parts[1] -%}
-    <link
-      rel="preload"
-      as="style"
-      href="https://fontsapi.zeoseven.com/10/{{ font_path }}/result.css"
-      onload="this.onload=null;this.rel='stylesheet'"
-      crossorigin
-    />
-    <noscript><link rel="stylesheet" href="https://fontsapi.zeoseven.com/10/{{ font_path }}/result.css" crossorigin /></noscript>
-  {%- endfor -%}
-  <link
-    rel="preload"
-    as="style"
-    href="https://fontsapi.zeoseven.com/442/main/result.css"
-    onload="this.onload=null;this.rel='stylesheet'"
-    crossorigin
-  />
-  <noscript><link rel="stylesheet" href="https://fontsapi.zeoseven.com/442/main/result.css" crossorigin /></noscript>
   <link rel="stylesheet" href="{{ "/assets/css/main.css" | relative_url }}" />
   {%- assign enable_katex = page.katex | default: site.katex -%}
   {%- if enable_katex -%}

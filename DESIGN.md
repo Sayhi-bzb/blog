@@ -1,62 +1,101 @@
 # Design System: Personal Blog Template
 **Project ID:** Local Jekyll template derived from `no-style-please`
 
+This document describes the design system that is actually implemented in the codebase. Treat `_sass/site.scss`, `_layouts/`, `_includes/`, and `_config.yml` as the source of truth. If this document and the code disagree, the code wins.
+
 ## 1. Visual Theme & Atmosphere
 
-This design system is built around a deliberately restrained form of late-20th-century hacker minimalism. It should feel closer to a personal text file, a low-resolution reading document, or an early hand-authored web page than to a branded product interface. The mood is plainspoken, quiet, anti-decorative, and slightly austere without becoming hostile.
+The site is a plain text-first Jekyll blog. Its visual language is narrow, monochrome, square-edged, and intentionally low on decoration. The implemented design is closer to a readable static document than to a product interface.
 
-The governing principle is not "unstyled" in the careless sense. It is "nearly no CSS" as an editorial stance. Styling exists only where it materially improves reading, hierarchy, or content clarity. The interface should never appear polished for its own sake. It should appear useful, calm, and intentionally underdesigned.
+The page has no cards, app chrome, hero layout, icon system, shadows, gradients, or decorative backgrounds. Visual structure comes from semantic HTML, one centered content column, black text, simple borders, list-based navigation, and consistent vertical rhythm.
 
-This system should avoid modern SaaS cues. No soft cards, no lush gradients, no ornamental iconography, no glossy component polish. Visual identity comes from discipline: semantic HTML, square edges, monochrome contrast, and strong reading rhythm.
-
-At the same time, the experience should respect modern reading habits. The page is intentionally narrow, breathing room is generous, paragraphs are separated clearly, and headings open up the vertical rhythm. The result is retro in tone but contemporary in comfort.
+The current code favors legibility over density. Spacing is generous around the page frame and between headings, while the actual content model remains simple: title, description, body copy, navigation lists, recent posts, archive lists, and article pages.
 
 ## 2. Color Palette & Roles
 
-- **Paper White (`#ffffff`)**: The default page field. Used as the uninterrupted background for both `html` and `body`, creating a bright document-like surface.
-- **Terminal Black (`#000000`)**: The primary foreground color. Used for body text, borders, horizontal rule ornamentation, table strokes, and the visual skeleton of the interface.
-- **Reversed Ink White (`#ffffff`) on Terminal Black (`#000000`)**: Used for inline code and code blocks. Inline code keeps the document's bitmap text voice but flips foreground and background; block code adds `Maple Mono NF CN` to make the technical zone feel more tool-like and terminal-adjacent.
-- **Anchor Signal Yellow (`#ffff00`)**: Used only for `:target` highlighting. It behaves like a utilitarian marker pen, calling attention to a navigated fragment without becoming a persistent brand accent.
+- **White (`#ffffff`)**: The page background. Both `html` and `body` are set to white.
+- **Black (`#000000`)**: The default text color, table border color, blockquote border color, inline code background, and code block background.
+- **White on Black (`#ffffff` on `#000000`)**: Used by `code` text through white foreground on black background.
+- **Muted Gray (`#555555`)**: Used by `.muted`, currently applied to article metadata.
+- **Target Yellow (`#ffff00`)**: Used only by `*:target` to highlight linked fragments.
 
-Dark appearance is not a separately designed palette. It is produced through full-page inversion. This gives the system a pragmatic, old-school hacker quality: the same document is flipped rather than cosmetically re-skinned. Images are inverted by default in dark mode and may opt out where needed.
+Dark appearance is implemented with `filter: invert(1)` on the body when `body[a="dark"]` is set or when `body[a="auto"]` matches `prefers-color-scheme: dark`. Images, iframes, and emoji are inverted back inside the dark mixin; images can opt out with the `.ioda` class. There is no separate dark color palette.
 
 ## 3. Typography Rules
 
-The default type voice is `WenQuanYi Bitmap Song`, mapped across `12px`, `14px`, and `16px` bitmap cuts. This choice is not decorative nostalgia. It gives the site a document-like low-resolution texture that feels deliberate rather than retro for its own sake. `Maple Mono NF CN` remains present, but only for block-level code where a more explicit tool register is useful.
+The site loads one local font file: `WenQuanYi Bitmap Song 16px.woff2`. All major text roles point to this same font family:
 
-Body copy uses a relaxed but still disciplined rhythm: `16px` type at `1.8` line height. This is a deliberate shift away from terminal density toward sustained reading comfort, especially for Chinese and mixed-language long-form text. The typography should feel calm and durable rather than airy, luxurious, or editorial.
+- body text
+- headings
+- small text
+- lead text
+- table text
+- inline code
+- code blocks
 
-Headings are explicit but restrained. They share a regular weight, a tight line-height envelope, and a scale built from bitmap-safe sizes rather than arbitrary interpolation. `h1` uses the `16px` bitmap face at `2rem`; `h2` uses the `14px` face at `1.75rem`; `h3` and `h4` use the `12px` face at `1.5rem`; `h5` and `h6` return to the `16px` body register. Hierarchy comes from this safe scaling plus vertical spacing, not from glossy display typography or exaggerated weight.
+There is no monospace code font in the current implementation. Code is visually separated by color and block treatment, not by a second typeface.
 
-Paragraphs maintain consistent separation (`1.25rem`). Lists preserve the same vertical rhythm while using modest indentation (`1.5rem`), slightly looser block spacing (`1.15rem`), and a measured item cadence (`0.5rem`). Inline code shares the same bitmap type family as the body and is slightly reduced in size so it reads as part of the document instead of as a second font system. Block code switches to `Maple Mono NF CN` at a matched visual size to create a clearer technical boundary.
+Core implemented type tokens:
 
-The system allows a very small number of supporting text roles. A **Lead** paragraph may appear for home-page descriptions or the opening paragraph after an article title; it keeps the same bitmap family and size as body copy, but inherits the looser reading rhythm. **Small** text is reserved for compact metadata or support copy and moves to the `14px` bitmap cut. **Muted** text lowers emphasis through tone rather than through a different typeface or decorative treatment.
+- Body text: `1rem`, line height `1.8`
+- Small text: `0.875rem`, line height `1.5`
+- Inline code: `0.9375rem`
+- Code blocks: `0.9375rem`
+- `h1`: `2rem`, line height `1`
+- `h2`: `1.75rem`, line height `1.1`
+- `h3`: `1.5rem`, line height `1.1`
+- `h4`: `1.5rem`, line height `1.25`
+- `h5` and `h6`: `1rem`
 
-The typographic system is intentionally tokenized. Body text, supporting text, headings, emphasis, and code blocks should all route through a small shared interface rather than through ad hoc font declarations or browser defaults. New text elements should inherit one of these established roles instead of introducing a fresh type treatment.
+Text weight is regular by default. Emphasis uses `font-weight: 700` with `font-synthesis: weight`; body text disables font synthesis with `font-synthesis: none`.
 
-The typographic system should remain plain. Avoid expressive display fonts, dramatic tracking, oversized hero headlines, or editorial flourishes. Hierarchy should come from semantics, order, and spacing.
+## 4. Implemented Patterns
 
-## 4. Component Stylings
+- **Page shell:** Every page uses the default layout: `main.page-content` containing a single `.w` reading column.
+- **Navigation:** Navigation is plain nested unordered lists of text links generated by `menu_item.html`.
+- **Post lists:** Post listings are unordered lists with a date span followed by a text link. Titles may be lowercased through `theme_config.lowercase_titles`.
+- **Article metadata:** Post dates use `.post-meta.small.muted`, right aligned with a bottom margin.
+- **Back link:** Post and archive pages include the shared back-home include before the page content.
+- **Inline code:** `code` uses white text on a black background with small horizontal padding.
+- **Code blocks:** Rouge code blocks use the same font family as prose, display as blocks, allow horizontal overflow, preserve wrapping with `white-space: pre-wrap`, and have `1rem` padding.
+- **Blockquotes:** Blockquotes are italic, square, flat, and enclosed by a `2px` black border with `1rem` padding.
+- **Tables:** Tables are full width with collapsed `2px` black borders and `0.4rem` cell padding.
+- **Horizontal rules:** `hr` has no border. It renders slash text through `:before` and `:after`.
+- **Images:** Images are block-level, centered, and capped at `max-width: 100%`.
 
-* **Buttons:** There are no native button patterns in the visual language. Interactive emphasis should default to text links rather than filled controls. If a future button is required, it should stay square, monochrome, and text-led rather than product-like.
-* **Cards/Containers:** The system intentionally avoids card metaphors. The primary container is a single reading column with no shadow, no tint shift, and no rounded corners. Content blocks are differentiated by semantic structure, not by panels.
-* **Inputs/Forms:** There is no elaborate form styling in the current template. Any future form elements should inherit the same plain, squared, black-on-white document language and attach to the shared text system rather than to browser-default UI fonts.
-* **Links and Navigation:** Links are treated as ordinary textual affordances within the document flow. Navigation should feel like a curated list of references, not like an app menu bar.
-* **Article Metadata:** Dates are understated, aligned to the right, and treated as small muted support text rather than as a decorative badge.
-* **Blockquotes:** Quotes are enclosed by a firm `2px` black border with internal padding (`1rem`) and italic text. They read like annotated excerpts pulled into the page margin, but remain fully square and flat.
-* **Code Blocks:** Code appears as reversed monochrome: white text on black. Inline code stays inside the body bitmap voice; only block-level code switches to `Maple Mono NF CN`. Blocks have internal padding (`1rem`) and wrap safely for narrow screens, preserving readability over strict terminal emulation.
-* **Tables:** Tables use firm `2px` black borders with collapsed strokes. Body cells share the same reading system as paragraphs, while table headers rely on explicit emphasis rules rather than browser-default bold styling. The result should feel utilitarian, closer to a reference sheet than to a data dashboard.
-* **Horizontal Rules:** Dividers are ornamental in a minimal ASCII-like way, built from forward slashes rather than graphic lines. This detail quietly reinforces the hacker-text sensibility.
-* **Images:** Images are centered, responsive, and secondary to text. They should not define the layout or overpower the document rhythm.
+Buttons, cards, form controls, icon buttons, modals, and app-style controls do not have implemented component standards in this template. Future additions should inherit the existing text system and square monochrome language unless code is added to define a new pattern.
 
 ## 5. Layout Principles
 
-The layout is a single centered reading column capped at `640px`. This narrow measure is essential. It keeps the page in the register of a personal note system or long-form technical journal rather than a magazine spread or modern app shell.
+The layout is one centered reading column:
 
-Page padding is generous at the outer frame (`4rem` top and bottom, `2rem` left and right). This creates breathing room around an otherwise austere system and prevents the experience from feeling cramped or accidentally primitive.
+- `.w` max width: `640px`
+- desktop padding: `4rem 2rem`
+- mobile padding below `700px`: `2.5rem 1.25rem`
 
-Whitespace is applied selectively and purposefully. The system is not spacious in a luxurious sense; it is spacious where reading needs pause. Headings, paragraphs, lists, quotes, and code blocks should all keep a clear vertical rhythm without introducing decorative separation devices.
+The home page stacks content in document order: site title, optional description, page body, primary navigation, and recent posts. Archive and post pages use the same shell and same content column.
 
-The home page should read like a structured document, not a landing page. Title, short description, intro copy, navigation, and recent posts stack in a calm linear order. Archive and article pages should keep the same single-column discipline.
+Spacing is defined in Sass variables and should remain token-driven. Current key spacing values include:
 
-When extending this system, prefer semantic HTML first and CSS second. Any new styling should earn its place by improving legibility, orientation, or content structure. If a design decision makes the site feel more branded, more polished, or more application-like, it is probably moving away from the intended language.
+- Paragraph margin: `1.1rem 0`
+- List margin: `1rem 0`
+- List indentation: `1.5rem`
+- List item margin: `0.35rem 0`
+- Block spacing: `1.25rem 0`
+- `h2` top margin: `2.4rem`
+- `h3` top margin: `2rem`
+- `h4` top margin: `1.5rem`
+
+The site should continue to prefer semantic structure over decorative containers. New page types should start from the same single-column document model before adding new visual rules.
+
+## 6. Loading And Optional Assets
+
+The default visual system depends on one stylesheet and one local font file. Sass output is compressed through `_config.yml`.
+
+Optional assets are configuration-driven:
+
+- KaTeX CSS loads only when `page.katex` or `site.katex` is true.
+- GoatCounter loads only in production and only when `site.goat_counter` is configured.
+- A favicon link is emitted only when `site.favicon` is configured.
+
+These optional assets are not part of the default visual baseline.

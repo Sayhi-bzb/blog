@@ -1,15 +1,15 @@
 title: Your Blog
-author: Your Name
+author: Henry He
 email: you@example.com
 lang: zh-CN
-url: https://example.com
+url: https://h3nryh3.com
 baseurl: ""
 description: >-
   记录写作、代码和缓慢搭起来的个人空间。
 
 permalink: /:slug/
 timezone: Asia/Shanghai
-favicon: ""
+favicon: "/assets/logo.svg"
 katex: false
 # goat_counter: "yoursitename"
 
@@ -34,7 +34,9 @@ exclude:
   - AGENTS.md
   - CLAUDE.md
   - DESIGN.md
+  - scripts/
   - skills-lock.json
+  - writing/
 
 sass:
   style: compressed

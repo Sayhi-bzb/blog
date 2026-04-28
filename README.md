@@ -32,7 +32,7 @@
 - `_config.yml` 里的站点标题、作者、网址、简介
 - `_data/menu.yml` 里的导航链接
 - `about.md` 里的自我介绍
-- `_posts/` 里的占位文章
+- 用 `writing/blog-post-template.md` 或自己的 Markdown 文件开始写文章
 
 ## 写作约定
 
@@ -40,6 +40,140 @@
 - 文章默认继承 `post` 布局，只需要写标题和正文
 - 首页最近文章数量由 `_config.yml` 中的 `theme_config.home_post_limit` 控制
 - 如果需要 KaTeX 样式，可以在 `_config.yml` 中把 `katex` 设为 `true`，或者只在单页 front matter 里写 `katex: true`
+
+## 自动导入文章
+
+如果你在 Obsidian 或 Notion 里写文章，可以先复制 `writing/blog-post-template.md` 作为写作模板。写完后用导入脚本生成 Jekyll 文章：
+
+```bash
+ruby scripts/import_post.rb path/to/article.md
+```
+
+脚本会：
+
+- 读取 `title`、`date`、`slug`、`tags`、`katex` 等 front matter
+- 缺少标题时从第一个 `# 一级标题` 或文件名推导
+- 缺少日期时使用当前时间
+- 缺少 slug 时从标题或文件名推导
+- 输出到 `_posts/YYYY-MM-DD-slug.md`
+- 将本地图片复制到 `assets/images/posts/<slug>/`
+- 将 Obsidian 图片 `![[image.png]]` 改写成普通 Markdown 图片
+- 将 Obsidian 内链 `[[Note]]` 或 `[[Note|Alias]]` 转成纯文本并输出 warning
+- 默认执行 `bundle exec jekyll build`
+
+常用选项：
+
+```bash
+ruby scripts/import_post.rb path/to/article.md --dry-run
+ruby scripts/import_post.rb path/to/article.md --no-build
+ruby scripts/import_post.rb path/to/article.md --force
+```
+
+## 写作格式速查
+
+### 页面组件
+
+- 首页：站点标题、简介、导航、最近文章、全站 footer
+- 文章页：返回首页、日期、标题、正文、全站 footer
+- 静态页：返回首页、标题、正文、全站 footer
+- 归档页：返回首页、标题、文章列表、全站 footer
+
+### Markdown 写法
+
+标题：
+
+```md
+# 一级标题
+## 二级标题
+### 三级标题
+```
+
+段落、链接、加粗、行内代码：
+
+```md
+这是一段正文。
+
+[链接文字](https://example.com)
+
+**重点文字**
+
+运行 `bundle exec jekyll build`。
+```
+
+列表：
+
+```md
+- 第一项
+- 第二项
+
+1. 第一步
+2. 第二步
+```
+
+代码块：
+
+````md
+```bash
+bundle exec jekyll build
+bundle exec jekyll serve
+```
+````
+
+引用：
+
+```md
+> 这里是一段引用。
+```
+
+分割线：
+
+```md
+---
+```
+
+分割线会复用站点里的 `hr` 样式，渲染成 `/////` 风格的文本分隔。
+
+表格：
+
+```md
+| 场景 | 动作 |
+| --- | --- |
+| 写草稿 | 先记录 |
+| 写教程 | 给出步骤 |
+```
+
+图片：
+
+```md
+![图片说明](/assets/images/example.png)
+```
+
+脚注：
+
+```md
+这里有一个脚注引用[^1]。
+
+[^1]: 这里是脚注内容。
+```
+
+HTML 上标：
+
+```md
+术语<sup>[A]</sup>
+```
+
+KaTeX：
+
+```yaml
+---
+title: 带公式的文章
+katex: true
+---
+```
+
+KaTeX 默认关闭。需要全站开启时改 `_config.yml`，只在单篇文章开启时写在 front matter 里。
+
+当前没有专门的 `callout` 组件。需要提示块时先使用 Markdown 引用 `>`；如果以后要新增 callout，再单独设计对应样式。
 
 ## 部署
 

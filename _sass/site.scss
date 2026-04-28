@@ -27,21 +27,25 @@ html, body { background: white; }
 
 html { height: 100%; scroll-behavior: smooth; }
 
+@font-face {
+  font-family: "WenQuanYi Bitmap Song 16px";
+  src: url("../fonts/WenQuanYi%20Bitmap%20Song%2016px.woff2") format("woff2");
+  font-display: swap;
+}
+
 :root {
-  --font-family-bitmap-12: "WenQuanYi Bitmap Song 12px", serif;
-  --font-family-bitmap-14: "WenQuanYi Bitmap Song 14px", serif;
   --font-family-bitmap-16: "WenQuanYi Bitmap Song 16px", serif;
-  --font-family-code-block: "Maple Mono NF CN", monospace;
+  --font-family-code-block: var(--font-family-bitmap-16);
 
   --font-weight-regular: 400;
   --font-weight-emphasis: 700;
 
   --font-family-text: var(--font-family-bitmap-16);
-  --font-family-text-small: var(--font-family-bitmap-14);
+  --font-family-text-small: var(--font-family-bitmap-16);
   --font-family-heading-1: var(--font-family-bitmap-16);
-  --font-family-heading-2: var(--font-family-bitmap-14);
-  --font-family-heading-3: var(--font-family-bitmap-12);
-  --font-family-heading-4: var(--font-family-bitmap-12);
+  --font-family-heading-2: var(--font-family-bitmap-16);
+  --font-family-heading-3: var(--font-family-bitmap-16);
+  --font-family-heading-4: var(--font-family-bitmap-16);
   --font-family-heading-5: var(--font-family-bitmap-16);
   --font-family-heading-6: var(--font-family-bitmap-16);
   --font-family-lead: var(--font-family-text);
@@ -68,18 +72,19 @@ html { height: 100%; scroll-behavior: smooth; }
   --line-height-heading-4: 1.25;
   --line-height-lead: var(--line-height-text);
 
-  --space-paragraph: 1.25rem;
-  --space-list: 1.15rem;
-  --space-list-item: 0.5rem;
-  --space-heading-1-bottom: 1.5rem;
-  --space-heading-2-top: 3rem;
-  --space-heading-2-bottom: 1rem;
-  --space-heading-3-top: 2.5rem;
-  --space-heading-3-bottom: 0.75rem;
-  --space-heading-4-top: 1.75rem;
+  --space-paragraph: 1.1rem;
+  --space-list: 1rem;
+  --space-list-item: 0.35rem;
+  --space-heading-1-bottom: 1.35rem;
+  --space-heading-2-top: 2.4rem;
+  --space-heading-2-bottom: 0.85rem;
+  --space-heading-3-top: 2rem;
+  --space-heading-3-bottom: 0.65rem;
+  --space-heading-4-top: 1.5rem;
   --space-heading-4-bottom: 0.5rem;
-  --space-heading-5-top: 1.5rem;
-  --space-heading-5-bottom: 0.75rem;
+  --space-heading-5-top: 1.25rem;
+  --space-heading-5-bottom: 0.65rem;
+  --space-block: 1.25rem;
 
   --font-synthesis-text: none;
   --font-synthesis-emphasis: weight;
@@ -179,6 +184,12 @@ li { margin: var(--space-list-item) 0; }
   padding: 4rem 2rem;
 }
 
+@media (max-width: 700px) {
+  .w {
+    padding: 2.5rem 1.25rem;
+  }
+}
+
 hr {
   text-align: center;
   border: 0;
@@ -257,6 +268,11 @@ code {
   padding: 0.05rem 0.25rem;
 }
 
+pre,
+div.highlighter-rouge {
+  margin: var(--space-block) 0;
+}
+
 div.highlighter-rouge code {
   display: block;
   overflow-x: auto;
@@ -267,14 +283,63 @@ div.highlighter-rouge code {
 blockquote {
   font-style: italic;
   border: 2px solid black;
-  margin: 1.5rem 0;
+  margin: var(--space-block) 0;
   padding: 1rem;
 
   p { margin: 0; }
+}
+
+.footnotes {
+  margin-top: 2rem;
+  font-family: var(--font-family-text-small);
+  font-size: var(--font-size-text-small);
+  line-height: var(--line-height-text-small);
+}
+
+.footnotes ol {
+  margin: var(--space-list) 0 0;
 }
 
 img {
   max-width: 100%;
   display: block;
   margin: 0 auto;
+}
+
+.site-footer .w {
+  padding-top: 0;
+}
+
+.site-footer hr {
+  margin-top: 0;
+}
+
+.site-footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.site-footer__copyright {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.site-footer__links {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  white-space: nowrap;
+}
+
+.site-footer__icon-link {
+  display: inline-flex;
+  align-items: center;
+}
+
+.site-footer__icon {
+  width: 1rem;
+  height: 1rem;
+  fill: currentColor;
 }
