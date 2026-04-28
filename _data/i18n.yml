@@ -1,0 +1,19 @@
+en:
+  description: "Notes on writing, code, and a personal space slowly taking shape."
+  recent_posts: "Recent posts"
+  show_more: "Archive..."
+  empty_posts: "No posts yet."
+  back_home: "Home"
+  language_label: "中文"
+  language_aria: "Read in Chinese"
+  footer: "Footer"
+
+zh-CN:
+  description: "记录写作、代码和缓慢搭起来的个人空间。"
+  recent_posts: "最近文章"
+  show_more: "查看归档..."
+  empty_posts: "还没有文章，先写下第一篇吧。"
+  back_home: "首页"
+  language_label: "EN"
+  language_aria: "Read in English"
+  footer: "页脚"

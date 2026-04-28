@@ -12,7 +12,7 @@ VERSION = "1.0.0"
 IMAGE_EXTENSIONS = %w[.apng .avif .gif .jpeg .jpg .png .svg .webp].freeze
 
 Options = Struct.new(:source, :build, :dry_run, :force, keyword_init: true)
-PostData = Struct.new(:metadata, :content, :title, :date, :slug, keyword_init: true)
+PostData = Struct.new(:metadata, :content, :title, :date, :slug, :lang, :translation_key, keyword_init: true)
 Validation = Struct.new(:errors, :warnings, keyword_init: true)
 ImportState = Struct.new(:post_path, :post_existed, :previous_post_content, :copied_files, keyword_init: true)
 
@@ -141,6 +141,22 @@ def normalize_slug(metadata, title, source)
   slugify(value && !value.to_s.strip.empty? ? value : title, source)
 end
 
+def normalize_lang(metadata)
+  value = metadata["lang"] || metadata[:lang] || "en"
+  lang = value.to_s.strip
+
+  return "zh-CN" if lang.downcase.start_with?("zh")
+  return "en" if lang.downcase.start_with?("en")
+
+  lang
+end
+
+def normalize_translation_key(metadata, slug)
+  value = metadata["translation_key"] || metadata[:translation_key]
+  key = value && value.to_s.strip
+  key.nil? || key.empty? ? slug : slugify(key, slug)
+end
+
 def post_data(source)
   text = File.read(source, encoding: "UTF-8")
   abort_with("Source is not valid UTF-8: #{source}") unless text.valid_encoding?
@@ -150,8 +166,10 @@ def post_data(source)
   content = remove_matching_first_h1(content, title)
   date = normalize_date(metadata)
   slug = normalize_slug(metadata, title, source)
+  lang = normalize_lang(metadata)
+  translation_key = normalize_translation_key(metadata, slug)
 
-  PostData.new(metadata: metadata, content: content, title: title, date: date, slug: slug)
+  PostData.new(metadata: metadata, content: content, title: title, date: date, slug: slug, lang: lang, translation_key: translation_key)
 end
 
 def image_path?(path)
@@ -223,6 +241,8 @@ def validate_import(data, source, output_path, force)
   validation.errors << "Title is empty." if data.title.empty?
   validation.errors << "Slug is empty." if data.slug.empty?
   validation.errors << "Slug is not safe for filenames: #{data.slug}" unless data.slug.match?(/\A[a-z0-9][a-z0-9-]*\z/)
+  validation.errors << "Unsupported lang: #{data.lang}. Use en or zh-CN." unless %w[en zh-CN].include?(data.lang)
+  validation.errors << "Translation key is empty." if data.translation_key.empty?
   validation.errors << "Post already exists: #{output_path}. Use --force to overwrite." if output_path.exist? && !force
 
   validation
@@ -314,7 +334,8 @@ end
 def jekyll_front_matter(data)
   output = {
     "title" => data.title,
-    "date" => data.date
+    "date" => data.date,
+    "lang" => data.lang
   }
 
   %w[slug tags katex].each do |key|
@@ -323,6 +344,7 @@ def jekyll_front_matter(data)
   end
 
   output["slug"] ||= data.slug
+  output["translation_key"] = data.translation_key
   output.to_yaml.sub(/\A---\n/, "---\n")
 end
 
@@ -372,7 +394,8 @@ abort_with("Source file not found: #{source}") unless source.file?
 abort_with("Source must be a Markdown file: #{source}") unless source.extname.downcase == ".md"
 
 data = post_data(source)
-output_path = Pathname.new("_posts/#{date_prefix(data.date)}-#{data.slug}.md")
+post_directory = data.lang == "zh-CN" ? Pathname.new("_posts/zh") : Pathname.new("_posts/en")
+output_path = post_directory.join("#{date_prefix(data.date)}-#{data.slug}.md")
 validation = validate_import(data, source, output_path, options.force)
 
 abort_with_errors(validation.errors) unless validation.errors.empty?

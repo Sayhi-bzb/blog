@@ -1,5 +1,9 @@
 ---
 layout: home
+lang: en
+translation_key: home
+permalink: /
+description: Notes on writing, code, and a personal space slowly taking shape.
 ---
 
-欢迎来到这里。这里会慢慢存放长文、想法，以及那些还没完全成形、但值得先留下来的工作草稿。
+Welcome. This place will slowly collect essays, notes, and working drafts that are not fully settled yet but are worth keeping.

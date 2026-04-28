@@ -1,7 +1,17 @@
-entries:
-  - title: 关于
-    url: /about/
-  - title: 归档
-    url: /archive/
-  - title: RSS
-    url: /feed.xml
+en:
+  entries:
+    - title: About
+      url: /about/
+    - title: Archive
+      url: /archive/
+    - title: RSS
+      url: /feed.xml
+
+zh-CN:
+  entries:
+    - title: 关于
+      url: /zh/about/
+    - title: 归档
+      url: /zh/archive/
+    - title: RSS
+      url: /feed.xml

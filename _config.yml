@@ -1,11 +1,11 @@
 title: Your Blog
 author: Henry He
 email: you@example.com
-lang: zh-CN
+lang: en
 url: https://h3nryh3.com
 baseurl: ""
 description: >-
-  记录写作、代码和缓慢搭起来的个人空间。
+  Notes on writing, code, and a personal space slowly taking shape.
 
 permalink: /:slug/
 timezone: Asia/Shanghai
@@ -15,7 +15,6 @@ katex: false
 
 theme_config:
   appearance: "auto"
-  back_home_text: "首页"
   date_format: "%Y-%m-%d"
   show_description: true
   lowercase_titles: false
@@ -27,6 +26,15 @@ defaults:
       type: posts
     values:
       layout: post
+      lang: en
+      permalink: /:slug/
+  - scope:
+      path: "_posts/zh"
+      type: posts
+    values:
+      layout: post
+      lang: zh-CN
+      permalink: /zh/:slug/
 
 exclude:
   - .agents/

@@ -1,0 +1,31 @@
+{%- if page.translation_key -%}
+  {%- assign en_url = nil -%}
+  {%- assign zh_url = nil -%}
+
+  {%- for item in site.pages -%}
+    {%- if item.translation_key == page.translation_key -%}
+      {%- if item.lang == "en" -%}
+        {%- assign en_url = item.url | absolute_url -%}
+      {%- elsif item.lang == "zh-CN" -%}
+        {%- assign zh_url = item.url | absolute_url -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- for item in site.posts -%}
+    {%- if item.translation_key == page.translation_key -%}
+      {%- if item.lang == "en" -%}
+        {%- assign en_url = item.url | absolute_url -%}
+      {%- elsif item.lang == "zh-CN" -%}
+        {%- assign zh_url = item.url | absolute_url -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- if en_url -%}
+    <link rel="alternate" hreflang="en" href="{{ en_url }}" />
+  {%- endif -%}
+  {%- if zh_url -%}
+    <link rel="alternate" hreflang="zh-CN" href="{{ zh_url }}" />
+  {%- endif -%}
+{%- endif -%}

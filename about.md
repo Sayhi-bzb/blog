@@ -1,8 +1,12 @@
 ---
 layout: page
-title: 关于
+title: About
+lang: en
+translation_key: about
+permalink: /about/
+description: A short introduction and contact page.
 ---
 
-这里可以写你的自我介绍、研究方向、工作方式，或者任何希望第一次访问者快速了解的内容。
+This page is for a short introduction: who you are, what you write about, and how people can reach you.
 
-如果你想保持极简，这一页只要回答三个问题就够了：你是谁、你在写什么、怎样联系你。
+Keep it plain. A personal site does not need to perform.

@@ -1,1 +1,8 @@
-<a href="{{ "/" | relative_url }}">{{ site.theme_config.back_home_text }}</a>
+{%- assign page_lang = page.lang | default: site.lang | default: "en" -%}
+{%- assign i18n = site.data.i18n[page_lang] | default: site.data.i18n.en -%}
+{%- if page_lang == "zh-CN" -%}
+  {%- assign home_url = "/zh/" -%}
+{%- else -%}
+  {%- assign home_url = "/" -%}
+{%- endif -%}
+<a href="{{ home_url | relative_url }}">{{ i18n.back_home }}</a>

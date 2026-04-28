@@ -4,15 +4,23 @@
   {%-assign posts = site.posts-%}
 {%-endif-%}
 
-{%-if include.limit and posts.size > include.limit-%}
-  {%-assign limit_exceeded = true-%}
-{%-else-%}
-  {%-assign limit_exceeded = false-%}
-{%-endif-%}
+{%-assign page_lang = include.lang | default: page.lang | default: site.lang | default: "en"-%}
+{%-assign visible_count = 0-%}
+{%-assign rendered_count = 0-%}
 
-{%- if posts.size > 0 -%}
+{%-for post in posts-%}
+  {%-assign post_lang = post.lang | default: site.lang | default: "en"-%}
+  {%-if post_lang == page_lang-%}
+    {%-assign visible_count = visible_count | plus: 1-%}
+  {%-endif-%}
+{%-endfor-%}
+
+{%- if visible_count > 0 -%}
   <ul>
-    {%- for post in posts limit: include.limit -%}
+    {%- for post in posts -%}
+      {%-assign post_lang = post.lang | default: site.lang | default: "en"-%}
+      {%-if post_lang == page_lang-%}
+        {%-if include.limit == nil or rendered_count < include.limit-%}
         <li>
           <span>{{- post.date | date: site.theme_config.date_format -}}</span>
           {% if site.theme_config.lowercase_titles == true %}
@@ -21,8 +29,11 @@
           <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
           {% endif %}
         </li>
+        {%-assign rendered_count = rendered_count | plus: 1-%}
+        {%-endif-%}
+      {%-endif-%}
      {%- endfor -%}
-     {%- if include.show_more and limit_exceeded -%}
+     {%- if include.show_more and include.limit and visible_count > include.limit -%}
       <li><a href="{% if include.show_more_url contains '://' or include.show_more_url contains 'mailto:' %}{{ include.show_more_url }}{% else %}{{ include.show_more_url | relative_url }}{% endif %}">{{ include.show_more_text | default: "Show more..." }}</a></li>
      {%- endif -%}
    </ul>

@@ -1,0 +1,24 @@
+{%- if page.url == "/" -%}
+  <script>
+    (function () {
+      var saved = localStorage.getItem("site-lang");
+      var language = navigator.language || navigator.userLanguage || "";
+
+      if (!saved && language.toLowerCase().indexOf("zh") === 0) {
+        localStorage.setItem("site-lang", "zh-CN");
+        window.location.replace("{{ "/zh/" | relative_url }}");
+      }
+    }());
+  </script>
+{%- endif -%}
+
+<script>
+  (function () {
+    document.addEventListener("click", function (event) {
+      var link = event.target.closest("[data-lang-choice]");
+      if (link) {
+        localStorage.setItem("site-lang", link.getAttribute("data-lang-choice"));
+      }
+    });
+  }());
+</script>

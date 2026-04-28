@@ -1,4 +1,8 @@
 ---
 layout: archive
-title: 归档
+title: Archive
+lang: en
+translation_key: archive
+permalink: /archive/
+description: The English post archive.
 ---

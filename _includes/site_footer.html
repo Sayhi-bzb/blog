@@ -1,4 +1,6 @@
-<footer class="site-footer" aria-label="Site footer">
+{%- assign page_lang = page.lang | default: site.lang | default: "en" -%}
+{%- assign i18n = site.data.i18n[page_lang] | default: site.data.i18n.en -%}
+<footer class="site-footer" aria-label="{{ i18n.footer | default: "Footer" }}">
   <div class="w">
     <hr data-content="" />
 
@@ -7,7 +9,8 @@
         &copy; {{ site.time | date: "%Y" }} {{ site.author }}
       </p>
 
-      <nav class="site-footer__links" aria-label="Footer">
+      <nav class="site-footer__links" aria-label="{{ i18n.footer | default: "Footer" }}">
+        {%-include language_switch.html-%}
         <a class="site-footer__icon-link" href="{{ "/feed.xml" | relative_url }}" aria-label="RSS">
           <svg class="site-footer__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M5 19a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM1 8.5v3A10.5 10.5 0 0 1 11.5 22h3A13.5 13.5 0 0 0 1 8.5ZM1 2v3a17 17 0 0 1 17 17h3A20 20 0 0 0 1 2Z" />

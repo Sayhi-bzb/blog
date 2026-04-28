@@ -1,29 +1,38 @@
 ---
 layout: default
 ---
+{%- assign page_lang = page.lang | default: site.lang | default: "en" -%}
+{%- assign i18n = site.data.i18n[page_lang] | default: site.data.i18n.en -%}
+{%- assign menu_data = site.data.menu[page_lang] -%}
+{%- assign archive_url = "/archive/" -%}
+{%- if page_lang == "zh-CN" -%}
+  {%- assign archive_url = "/zh/archive/" -%}
+{%- endif -%}
+
 <header>
   <h1>{{ site.title }}</h1>
   {%-if site.theme_config.show_description-%}
-    <p class="lead">{{ site.description }}</p>
+    <p class="lead">{{ i18n.description | default: site.description }}</p>
   {%-endif-%}
 </header>
 
 {{ content }}
 
-{%-if site.data.menu.entries and site.data.menu.entries.size > 0-%}
+{%-if menu_data.entries and menu_data.entries.size > 0-%}
   <nav aria-label="Primary">
-    {%-include menu_item.html collection=site.data.menu.entries-%}
+    {%-include menu_item.html collection=menu_data.entries lang=page_lang-%}
   </nav>
 {%-endif-%}
 
 <section aria-labelledby="recent-posts">
-  <h2 id="recent-posts">最近文章</h2>
+  <h2 id="recent-posts">{{ i18n.recent_posts }}</h2>
   {%
     include post_list.html
+      lang=page_lang
       limit=site.theme_config.home_post_limit
       show_more=true
-      show_more_text="查看归档..."
-      show_more_url="/archive/"
-      empty_text="还没有文章，先写下第一篇吧。"
+      show_more_text=i18n.show_more
+      show_more_url=archive_url
+      empty_text=i18n.empty_posts
   -%}
 </section>
