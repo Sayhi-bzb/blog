@@ -1,0 +1,71 @@
+<script>
+  (function () {
+    if (!("requestIdleCallback" in window) || !("URL" in window)) return;
+
+    var prefetched = new Set();
+    var allowedPathPattern = /\.(html?)$/i;
+
+    function shouldPrefetch(link) {
+      if (!link || !link.href) return false;
+      if (link.target || link.hasAttribute("download")) return false;
+      if (link.dataset.noPrefetch !== undefined) return false;
+
+      var url = new URL(link.href, window.location.href);
+      if (url.origin !== window.location.origin) return false;
+      if (url.pathname === window.location.pathname && url.hash) return false;
+      if (url.pathname === "/feed.xml" || url.pathname.endsWith("/feed.xml")) return false;
+      if (url.protocol !== "http:" && url.protocol !== "https:") return false;
+      if (url.pathname.includes("/assets/")) return false;
+      if (url.pathname.includes("/functions/")) return false;
+      if (url.pathname.includes(".") && !allowedPathPattern.test(url.pathname)) return false;
+
+      return true;
+    }
+
+    function prefetch(link) {
+      if (!shouldPrefetch(link)) return;
+
+      var url = new URL(link.href, window.location.href);
+      url.hash = "";
+      var href = url.href;
+
+      if (prefetched.has(href)) return;
+      prefetched.add(href);
+
+      requestIdleCallback(function () {
+        var hint = document.createElement("link");
+        hint.rel = "prefetch";
+        hint.href = href;
+        hint.as = "document";
+        document.head.appendChild(hint);
+      }, { timeout: 1500 });
+    }
+
+    document.addEventListener("mouseover", function (event) {
+      prefetch(event.target.closest("a"));
+    }, { passive: true });
+
+    document.addEventListener("focusin", function (event) {
+      prefetch(event.target.closest("a"));
+    });
+
+    document.addEventListener("touchstart", function (event) {
+      prefetch(event.target.closest("a"));
+    }, { passive: true });
+
+    if ("IntersectionObserver" in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            prefetch(entry.target);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: "160px" });
+
+      document.querySelectorAll("a[href]").forEach(function (link) {
+        if (shouldPrefetch(link)) observer.observe(link);
+      });
+    }
+  }());
+</script>
