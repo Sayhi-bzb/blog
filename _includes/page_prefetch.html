@@ -2,8 +2,13 @@
   (function () {
     if (!("requestIdleCallback" in window) || !("URL" in window)) return;
 
+    var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (connection && (connection.saveData || /^(slow-)?2g$/.test(connection.effectiveType || ""))) return;
+
     var prefetched = new Set();
     var allowedPathPattern = /\.(html?)$/i;
+    var hoverTimer = 0;
+    var hoverDelay = 100;
 
     function shouldPrefetch(link) {
       if (!link || !link.href) return false;
@@ -42,7 +47,15 @@
     }
 
     document.addEventListener("mouseover", function (event) {
-      prefetch(event.target.closest("a"));
+      var link = event.target.closest("a");
+      window.clearTimeout(hoverTimer);
+      hoverTimer = window.setTimeout(function () {
+        prefetch(link);
+      }, hoverDelay);
+    }, { passive: true });
+
+    document.addEventListener("mouseout", function () {
+      window.clearTimeout(hoverTimer);
     }, { passive: true });
 
     document.addEventListener("focusin", function (event) {
@@ -52,20 +65,5 @@
     document.addEventListener("touchstart", function (event) {
       prefetch(event.target.closest("a"));
     }, { passive: true });
-
-    if ("IntersectionObserver" in window) {
-      var observer = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            prefetch(entry.target);
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { rootMargin: "160px" });
-
-      document.querySelectorAll("a[href]").forEach(function (link) {
-        if (shouldPrefetch(link)) observer.observe(link);
-      });
-    }
   }());
 </script>
