@@ -4,7 +4,10 @@
   img {
     filter: invert(1);
 
-    &.ioda { filter: invert(0); }
+    &.ioda,
+    &.site-footer__icon {
+      filter: invert(0);
+    }
   }
   .emoji { filter: invert(1); }
   iframe {
@@ -401,9 +404,6 @@ img {
 .site-footer__icon {
   width: 1rem;
   height: 1rem;
-  fill: currentColor;
-}
-
-.site-footer__icon--stroke {
-  fill: none;
+  display: block;
+  margin: 0;
 }

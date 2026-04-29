@@ -23,12 +23,5 @@
 
 {%- assign i18n = site.data.i18n[current_lang] | default: site.data.i18n.en -%}
 <a class="site-footer__icon-link" href="{{ target_url }}" hreflang="{{ target_lang }}" lang="{{ target_lang }}" aria-label="{{ i18n.language_aria }}" title="{{ i18n.language_label }}" data-lang-choice="{{ target_lang }}">
-  <svg class="site-footer__icon site-footer__icon--stroke" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-    <path d="m5 8 6 6" />
-    <path d="m4 14 6-6 2-3" />
-    <path d="M2 5h12" />
-    <path d="M7 2h1" />
-    <path d="m22 22-5-10-5 10" />
-    <path d="M14 18h6" />
-  </svg>
+  <img class="site-footer__icon" src="{{ "/assets/icons/Translate.svg" | relative_url }}" alt="" aria-hidden="true" />
 </a>
